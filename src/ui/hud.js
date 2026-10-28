@@ -20,7 +20,7 @@ export function drawHud(ctx, host, slots, now) {
 
   // the clock, between the title and the players: big, and pulsing red in the last 10 seconds
   const left = host.timeLeft;
-  const hurry = left <= 10 && left > 0;
+  const hurry = left <= host.rushSec && left > 0;
   const pulse = hurry ? 1 + 0.08 * Math.max(0, Math.sin(now * Math.PI * 2)) : 1;
   ctx.save();
   ctx.translate(CLOCK_X, 77);
@@ -72,6 +72,9 @@ export function drawHud(ctx, host, slots, now) {
       emoji(ctx, s.state === 'lost' ? '👀' : '⏸️', x + 93, y + 55, 50);
     }
   });
+
+  // the final rush: glowing edges the whole time, and a big banner when it starts
+  if (hurry) drawRush(ctx, host, now);
 
   // floating points and sparkles
   for (const p of host.fx.parts) {
@@ -149,4 +152,35 @@ export function drawPreview(ctx, video, slots, roster) {
   ctx.strokeStyle = 'rgba(255,255,255,0.6)';
   ctx.stroke();
   ctx.restore();
+}
+
+function drawRush(ctx, host, now) {
+  const glow = 0.35 + 0.25 * Math.sin(now * Math.PI * 4);
+  ctx.save();
+  for (const [x0, y0, x1, y1, x, y, w, h] of [
+    [0, 0, 0, 60, 0, 0, W, 60],
+    [0, H, 0, H - 60, 0, H - 60, W, 60],
+    [0, 0, 60, 0, 0, 0, 60, H],
+    [W, 0, W - 60, 0, W - 60, 0, 60, H],
+  ]) {
+    const g = ctx.createLinearGradient(x0, y0, x1, y1);
+    g.addColorStop(0, `rgba(255, 90, 40, ${glow})`);
+    g.addColorStop(1, 'rgba(255, 90, 40, 0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(x, y, w, h);
+  }
+  ctx.restore();
+  const age = host.rushAt === undefined ? 99 : host.t - host.rushAt;
+  if (age < 2.6) {
+    const k = Math.min(1, age / 0.2, (2.6 - age) / 0.3);
+    const s = 0.8 + 0.2 * Math.min(1, age / 0.25) + 0.04 * Math.sin(now * 20);
+    ctx.save();
+    ctx.globalAlpha = k;
+    ctx.translate(W / 2, H * 0.52); // below the coach's tip card
+    ctx.scale(s, s);
+    panel(ctx, -560, -95, 1120, 190, { r: 40, fill: 'rgba(220, 60, 20, 0.95)', edge: '#ffd23f' });
+    text(ctx, `⚡ FINAL ${Math.round(host.rushSec)} SECONDS! ⚡`, 0, -25, { size: 78, color: '#fff' });
+    text(ctx, 'Faster, faster!', 0, 52, { size: 46, color: '#ffe66d' });
+    ctx.restore();
+  }
 }

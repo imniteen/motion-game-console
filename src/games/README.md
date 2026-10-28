@@ -33,6 +33,7 @@ with the body ("Flap your arms to fly up!"), not rules jargon.
 | `t()` | game seconds since the round started. Use this, never `performance.now()` (pause stops it) |
 | `progress()` | 0..1 through the round |
 | `level()` | difficulty multiplier, about 0.6 at the easiest to 2.0 at the hardest. Rises over the round, drops when the kids keep missing (auto-ease). Scale speeds and spawn rates with it |
+| `rush()` | true in the final rush (the last 15 s, a third of short rounds): `level()` is already 40% higher then; a game may also lift its own caps or add a twist |
 | `rng()` | seeded random 0..1: use it instead of Math.random (tests replay rounds) |
 | `lane(n)` | `{x0, x1, cx, w}` of player n's lane (the whole screen in shared games) |
 | `slots()` | how many player lanes there are (lane games) |

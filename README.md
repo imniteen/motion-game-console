@@ -36,7 +36,9 @@ the room (not a bright window behind them).
    second presses it (the ring fills).
 6. **How to play.** A character shows the move while the instructions are read out loud. The game starts by
    itself, or press "Let's go!".
-7. **Play.** Each game lasts 45 seconds by default (30, 60 or 90 in Settings): short bursts of exercise. The clock is at the top, each
+7. **Play.** Each game lasts 45 seconds by default (30, 60 or 90 in Settings): short bursts of exercise.
+   **The final rush:** the last 15 seconds (10 in a 30-second game) get faster and harder, with a big
+   ⚡ FINAL 15 SECONDS! banner, glowing screen edges and faster music, to finish on a high. The clock is at the top, each
    player's score is in their colour, and it gets harder as the round goes on.
    - **The coach:** if a player keeps missing, or does nothing for a while, a card drops in at the top. It
      shows a little character doing the move ("Red player: flap your arms like a bird!") and says it out

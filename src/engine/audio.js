@@ -158,6 +158,7 @@ function songFor(mood) {
   return {
     root: 57 + Math.floor(r() * 7),
     bpm: fast ? 112 + Math.floor(r() * 24) : 92 + Math.floor(r() * 12),
+    baseBpm: 0,
     prog: PROGS[Math.floor(r() * PROGS.length)],
     tune: Array.from({ length: 16 }, () => (r() < 0.25 ? null : SCALE[Math.floor(r() * 5)] + (r() < 0.3 ? 12 : 0))),
     drums: fast,
@@ -171,8 +172,8 @@ let nextBar = 0;
 let bar = 0;
 let songGain = null;
 
-/** Call every frame with what should be playing (null = silence). */
-export function music(want, quiet = false) {
+/** Call every frame with what should be playing (null = silence); `fast` speeds the song up (final rush). */
+export function music(want, quiet = false, fast = false) {
   const a = ac;
   if (!a || a.state !== 'running') return;
   if (want !== mood) {
@@ -183,6 +184,7 @@ export function music(want, quiet = false) {
     }
     mood = want;
     song = want ? songFor(want) : null;
+    if (song) song.baseBpm = song.bpm;
     songGain = null;
     if (song) {
       songGain = a.createGain();
@@ -195,6 +197,7 @@ export function music(want, quiet = false) {
   }
   if (songGain) songGain.gain.setTargetAtTime(quiet ? 0.35 : 1, a.currentTime, 0.15);
   if (!song) return;
+  song.bpm = song.baseBpm * (fast ? 1.25 : 1);
   if (nextBar < a.currentTime - 0.1) nextBar = a.currentTime + 0.05;
   while (nextBar < a.currentTime + 0.3) {
     playBar(song, bar++, nextBar);

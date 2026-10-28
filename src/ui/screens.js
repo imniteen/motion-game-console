@@ -446,6 +446,10 @@ export const countdown = {
     app.lastCount = 4;
     if (!arg?.resume || !app.host) {
       app.host = new GameHost(app.game, { settings: app.settings, sfx, say, slotCount: app.roster.slots.length });
+      app.host.onRush = () => {
+        sfx.warn();
+        say(`Final ${Math.round(app.host.rushSec)} seconds! Faster, faster!`, { interrupt: true });
+      };
       app.host.onTip = (tip) => {
         sfx.coach();
         say(`${PLAYER[tip.n - 1].name} player! ${MOVES[tip.move].tell}`, { interrupt: true });

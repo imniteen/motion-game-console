@@ -207,7 +207,8 @@ function draw() {
   app.screen.draw(app, g, now);
   if (app.state !== 'play' && app.state !== 'countdown') drawHandCursor(app, g);
   const inGame = ['play', 'countdown', 'pause'].includes(app.state);
-  music(app.state === 'boot' ? null : inGame ? app.game.id : app.state === 'results' ? 'results' : 'menu', speaking() || app.state === 'pause');
+  const rush = app.state === 'play' && app.host?.rushK() > 0;
+  music(app.state === 'boot' ? null : inGame ? app.game.id : app.state === 'results' ? 'results' : 'menu', speaking() || app.state === 'pause', rush);
   if (app.debug) {
     const s = app.source;
     const lines = [

@@ -60,7 +60,7 @@ export default {
         ctx.fx.pop('New: DUCK walls! 🐸', W / 2, H * 0.5, '#ffd23f');
       } else pose = pick(rng, [...POSES, ...(half ? ['duck'] : [])].filter((p) => p !== lastPose));
       lastPose = pose;
-      const dur = clamp(6.2 / ctx.level(), 3.6, 6.5);
+      const dur = clamp(6.2 / ctx.level(), ctx.rush?.() ? 2.9 : 3.6, 6.5); // the final rush lets walls come quicker
       wall = { pose, at: ctx.t(), dur, ok: new Set(), ready: new Set(), judged: false };
       lastCount = 0;
       ctx.sfx.whoosh();

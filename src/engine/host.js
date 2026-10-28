@@ -8,6 +8,8 @@ import { PLAYER } from '../ui/theme.js';
 import { Body } from '../vision/body.js';
 
 const BASE_LEVEL = { easy: 0.75, normal: 1, hard: 1.3, auto: 1 };
+// The final rush: the last 15 seconds (a third of a short round) get faster and harder, to finish on a high.
+export const RUSH = { secs: 15, boost: 0.4, rampIn: 1.5 };
 
 /**
  * @typedef {object} PlayerView  what a game sees of a player (positions in game space)
@@ -74,6 +76,17 @@ export class GameHost {
     return Math.max(0, this.roundSec - this.clock.t);
   }
 
+  /** How long the final rush lasts in this round. */
+  get rushSec() {
+    return Math.min(RUSH.secs, this.roundSec / 3);
+  }
+
+  /** 0 before the final rush, rising to 1 over its first moment. */
+  rushK() {
+    const into = this.rushSec - this.timeLeft;
+    return into <= 0 || this.ended ? 0 : Math.min(1, into / RUSH.rampIn);
+  }
+
   /** @param {number[]} ns player numbers in the game */
   start(ns) {
     this.clock.reset();
@@ -91,6 +104,7 @@ export class GameHost {
       t: () => this.clock.t,
       progress: () => Math.min(1, this.clock.t / this.roundSec),
       level: () => this.level(),
+      rush: () => this.rushK() > 0, // the final rush is on: games may add their own twist
       rng: this.rng,
       lane: (n) => this.lane(n),
       slots: () => this.o.slotCount, // how many lanes there are
@@ -113,11 +127,14 @@ export class GameHost {
     this.coach.join(n, this.clock.t);
   }
 
-  /** Difficulty right now: the setting, a ramp over the round, and auto-ease when the kids keep missing. */
+  /**
+   * Difficulty right now: the setting, a ramp over the round, auto-ease when the kids keep missing, and the
+   * final rush on top.
+   */
   level() {
     const base = BASE_LEVEL[this.o.settings.difficulty] ?? 1;
     const ramp = 1 + 0.5 * Math.min(1, this.clock.t / this.roundSec);
-    return base * ramp * this.ease;
+    return base * ramp * this.ease * (1 + RUSH.boost * this.rushK());
   }
 
   lane(n) {
@@ -269,13 +286,17 @@ export class GameHost {
       views.filter((v) => v.state === 'active').map((v) => ({ n: v.n, needs: this.round.needs ? this.round.needs(v.n) : this.def.moves[0] })),
     );
     if (tip) this.onTip?.(tip);
+    if (this.rushAt === undefined && this.rushK() > 0) {
+      this.rushAt = this.clock.t;
+      this.onRush?.();
+    }
     this.autoEase();
     this.stepFx(dt);
     if (!this.ended && this.clock.t >= this.roundSec) this.ended = { reason: 'time', message: "Time's up!" };
   }
 
   autoEase() {
-    if (this.o.settings.difficulty !== 'auto') return;
+    if (this.o.settings.difficulty !== 'auto' || this.rushK() > 0) return; // the rush is meant to be hard
     const t = this.clock.t;
     while (this.easeLog.length && t - this.easeLog[0].t > 15) this.easeLog.shift();
     if (this.nextEase && t < this.nextEase) return;

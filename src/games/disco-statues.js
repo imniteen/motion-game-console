@@ -62,7 +62,7 @@ export default {
     function startDance() {
       phase = 'dance';
       phaseAt = ctx.t();
-      const lv = clamp(ctx.level(), 0.7, 1.6);
+      const lv = clamp(ctx.level(), 0.7, ctx.rush?.() ? 2.1 : 1.6); // quicker phases in the final rush
       phaseLen = RESULT_SHOW + rand(rng, 4.5, 7.5) / lv;
       for (const s of pl.values()) {
         s.danced = 0;

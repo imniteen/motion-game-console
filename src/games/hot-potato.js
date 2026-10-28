@@ -69,7 +69,7 @@ export default {
     function newBomb(holder, players) {
       const at = seat(holder, players);
       const golden = twist && rng() < 0.5;
-      const fuse = rand(rng, 7, 10) / Math.min(1.8, ctx.level());
+      const fuse = rand(rng, 7, 10) / Math.min(ctx.rush?.() ? 2.3 : 1.8, ctx.level()); // shorter fuses in the final rush
       bombs.push({ holder, phase: 'drop', t0: ctx.t(), from: { x: at.x, y: -150 }, x: at.x, y: -150, fuse, fuseMax: fuse, landedAt: 0, golden, last: null, away: 0, tick: 0 });
       ctx.sfx.whoosh();
     }
