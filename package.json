@@ -1,0 +1,16 @@
+{
+  "name": "motion-console",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "A camera-controlled movement game console for kids. Runs in the browser, offline, nothing leaves the device.",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test \"test/unit/*.test.js\"",
+    "test:e2e": "node --test --test-concurrency=1 --test-timeout=600000 \"test/e2e/*.test.js\""
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.14.0"
+  }
+}

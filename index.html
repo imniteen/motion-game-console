@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>motion-console</title>
+    <meta name="theme-color" content="#0d1033" />
+    <link rel="icon" href="data:," />
+    <style>
+      html, body { margin: 0; height: 100%; background: #0d1033; overflow: hidden; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+      body { display: flex; align-items: center; justify-content: center; }
+      /* the game draws on a fixed 1920x1080 canvas, scaled to fit the screen with letterboxing */
+      canvas { display: block; width: min(100vw, calc(100vh * 16 / 9)); height: min(100vh, calc(100vw * 9 / 16)); cursor: default; }
+      video { display: none; }
+    </style>
+  </head>
+  <body>
+    <canvas id="screen" width="1920" height="1080"></canvas>
+    <video id="camera" playsinline muted></video>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>

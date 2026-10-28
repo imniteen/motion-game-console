@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+# local editor/agent settings
+.claude/
+# test photo from MediaPipe's public test assets: download it yourself (see test/fixtures/README.md)
+test/fixtures/pose.jpg
